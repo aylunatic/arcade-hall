@@ -5,8 +5,7 @@ Frog frog;
 void setup() {
   size(1000, 1000);
   background(0xAFE5FF);
-  winkTimer1 = int(random(750, 1250));
-  winkTimer2 = int(random(125, 250));
+  winkTimer1 = int(random(10000/frameRate, 17500/frameRate));
   frog = new Frog(width/2, height/2);
 
 }
@@ -20,6 +19,7 @@ class Frog {
   int posY;
   int headWidth = 250;
   int headHeight = 175;
+  int eyeSize = 100;
   int bodyWidth = headWidth - (headWidth/4);
   int bodyHeight = headHeight + (headHeight/5);
   Eye leftEye, rightEye;
@@ -28,8 +28,8 @@ class Frog {
   Frog(int x, int y) {
     posX = x;
     posY = y;
-    leftEye = new Eye(posX - headWidth/4, posY - headHeight, 110);
-    rightEye = new Eye(posX + headWidth/4, posY - headHeight, 110);
+    leftEye = new Eye(posX - headWidth/4, posY - headHeight, eyeSize);
+    rightEye = new Eye(posX + headWidth/4, posY - headHeight, eyeSize);
   }
   
   void drawFrog() {
@@ -43,10 +43,25 @@ class Frog {
   }
   
   void updateEyes() {
-    leftEye.update(mouseX, mouseY);
-    rightEye.update(mouseX, mouseY);
-    leftEye.display();
-    rightEye.display();
+    if(winkTimer1 > 0) { // Wenn die Bedingung erfüllt ist, sind noch Frames übrig in denen das Auge offen sein soll
+      leftEye.update(mouseX, mouseY);
+      rightEye.update(mouseX, mouseY);
+      leftEye.display();
+      rightEye.display();
+      winkTimer1--;
+    }
+    else if(winkTimer2 > 0) { // Wenn die Zeit des offenen Auges abgelaufen ist, geschlossen anzeigen und Zeit runterzählen
+      circle(posX - headWidth/4, posY - headHeight, eyeSize); // Linkes Auge
+      circle(posX + headWidth/4, posY - headHeight, eyeSize); // Rechtes Auge
+      winkTimer2--;
+    } else { // Wenn beide auf 0 sind, Auge wieder geöffnet anzeigen und neue Zeitintervalle für das nächste Blinzeln bestimmen
+      leftEye.update(mouseX, mouseY);
+      rightEye.update(mouseX, mouseY);
+      leftEye.display();
+      rightEye.display();
+      winkTimer1 = int(random(17500/frameRate, 25000/frameRate));
+      winkTimer2 = int(random(1000/frameRate, 1250/frameRate));
+    }
   }
 }
 
