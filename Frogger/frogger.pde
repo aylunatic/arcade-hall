@@ -1,17 +1,20 @@
+
 int winkTimer1;
 int winkTimer2;
 Frog frog;
+Fly fly;
 
 void setup() {
   size(1000, 1000);
   background(0xAFE5FF);
   winkTimer1 = int(random(10000/frameRate, 17500/frameRate));
   frog = new Frog(width/2, height/2);
-
 }
 
 void draw() {
+    background(0xAFE5FF);
     frog.drawFrog();
+    frog.updateTongue();
 }
 
 class Frog {
@@ -38,10 +41,9 @@ class Frog {
     ellipse(posX, posY - headHeight/2, headWidth, headHeight); // Kopf
     ellipse(posX, posY + bodyHeight/3, bodyWidth, bodyHeight); // Körper
     fill(203, 226, 152, 96);
-    ellipse(posX, posY + bodyHeight/3, bodyWidth - bodyWidth/3, bodyHeight - bodyHeight/3); // Körper
+    ellipse(posX, posY + bodyHeight/3, bodyWidth - bodyWidth/3, bodyHeight - bodyHeight/3); // Bauch
     updateEyes();// Positionen der Augen aktualisieren und anzeigen
     strokeWeight(4);
-
   }
   
   void updateEyes() {
@@ -53,6 +55,7 @@ class Frog {
       winkTimer1--;
     }
     else if(winkTimer2 > 0) { // Wenn die Zeit des offenen Auges abgelaufen ist, geschlossen anzeigen und Zeit runterzählen
+      fill(#72db62);
       circle(posX - headWidth/4, posY - headHeight, eyeSize); // Linkes Auge
       circle(posX + headWidth/4, posY - headHeight, eyeSize); // Rechtes Auge
       winkTimer2--;
@@ -65,6 +68,13 @@ class Frog {
       winkTimer2 = int(random(1000/frameRate, 1250/frameRate));
     }
   }
+
+  void updateTongue() {
+  if (mousePressed) {
+    fill(#E32C56);
+    ellipse(mouseX, mouseY, 30, 30);
+  }
+}
 }
 
 class Eye {
@@ -102,5 +112,17 @@ class Eye {
       ellipse(size/4, 0, size/2, size/2);
     }
     popMatrix();
+  }
+}
+
+class Fly {
+  int posX;
+  int posY;
+  int vX;
+  int vY;
+
+  Fly() {
+    posX = int(random((width/10), random(width/10)*2));
+    posY = int(random((height/10), random(height/3)));
   }
 }
