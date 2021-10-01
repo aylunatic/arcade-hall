@@ -58,6 +58,12 @@ class Frog {
       fill(#72db62);
       circle(posX - headWidth/4, posY - headHeight, eyeSize); // Linkes Auge
       circle(posX + headWidth/4, posY - headHeight, eyeSize); // Rechtes Auge
+      strokeWeight(10);
+      stroke(#337734);
+      line((posX-headWidth/4)-eyeSize/2+8, posY - headHeight +eyeSize/20, 
+           (posX-headWidth/4)+eyeSize/2-8, posY - headHeight +eyeSize/20);
+      line((posX+headWidth/4)-eyeSize/2+8, posY - headHeight +eyeSize/20, 
+           (posX+headWidth/4)+eyeSize/2-8, posY - headHeight +eyeSize/20);
       winkTimer2--;
     } else { // Wenn beide auf 0 sind, Auge wieder geöffnet anzeigen und neue Zeitintervalle für das nächste Blinzeln bestimmen
       leftEye.update(mouseX, mouseY);
