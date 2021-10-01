@@ -4,5 +4,16 @@
 			"path": "Frogger"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"activestate.autoActivate": false,
+		"activestate.autoConfigureTerminal": false,
+		"activestate.promptRuntimeCreation": false,
+		"workbench.iconTheme": "material-icon-theme",
+		"workbench.preferredDarkColorTheme": "Visual Studio 2019 Dark",
+		"workbench.colorTheme": "One Monokai",
+		"workbench.sideBar.location": "right",
+		"editor.padding.bottom": 20,
+		"editor.padding.top": 20,
+		"editor.renderWhitespace": "all"
+	}
 }
