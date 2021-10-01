@@ -37,6 +37,8 @@ class Frog {
     stroke(0,0,0,0); // keine Umrandungen
     ellipse(posX, posY - headHeight/2, headWidth, headHeight); // Kopf
     ellipse(posX, posY + bodyHeight/3, bodyWidth, bodyHeight); // Körper
+    fill(203, 226, 152, 96);
+    ellipse(posX, posY + bodyHeight/3, bodyWidth - bodyWidth/3, bodyHeight - bodyHeight/3); // Körper
     updateEyes();// Positionen der Augen aktualisieren und anzeigen
     strokeWeight(4);
 
