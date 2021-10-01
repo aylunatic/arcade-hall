@@ -1,16 +1,13 @@
-int canvasWidth = 700;
-int canvasHeight = 700;
-
 int winkTimer1;
 int winkTimer2;
 Frog frog;
 
 void setup() {
-  size(700, 700);
+  size(1000, 1000);
   background(0xAFE5FF);
   winkTimer1 = int(random(750, 1250));
   winkTimer2 = int(random(125, 250));
-  frog = new Frog(canvasWidth/2, canvasHeight/2);
+  frog = new Frog(width/2, height/2);
 
 }
 
@@ -21,22 +18,25 @@ void draw() {
 class Frog {
   int posX;
   int posY;
-  int bodyWidth = 300;
-  int bodyHeight = 200;
+  int headWidth = 250;
+  int headHeight = 175;
+  int bodyWidth = headWidth - (headWidth/4);
+  int bodyHeight = headHeight + (headHeight/5);
   Eye leftEye, rightEye;
   
   
   Frog(int x, int y) {
     posX = x;
     posY = y;
-    leftEye = new Eye((width/2) - bodyWidth/4, (height/2) - bodyHeight/2, 110);
-    rightEye = new Eye((width/2) + bodyWidth/4, (height/2) - bodyHeight/2, 110);
+    leftEye = new Eye(posX - headWidth/4, posY - headHeight, 110);
+    rightEye = new Eye(posX + headWidth/4, posY - headHeight, 110);
   }
   
   void drawFrog() {
     fill(#72db62); //Körperfarbe
     stroke(0,0,0,0); // keine Umrandungen
-    ellipse((width/2), (height/2), bodyWidth, bodyHeight); // Kopf
+    ellipse(posX, posY - headHeight/2, headWidth, headHeight); // Kopf
+    ellipse(posX, posY + bodyHeight/3, bodyWidth, bodyHeight); // Körper
     updateEyes();// Positionen der Augen aktualisieren und anzeigen
     strokeWeight(4);
 
@@ -45,11 +45,7 @@ class Frog {
   void updateEyes() {
     leftEye.update(mouseX, mouseY);
     rightEye.update(mouseX, mouseY);
-    stroke(#72db62);
-    strokeWeight(10);
     leftEye.display();
-    stroke(#72db62);
-    strokeWeight(10);
     rightEye.display();
   }
 }
@@ -73,6 +69,8 @@ class Eye {
     pushMatrix();
     translate(x, y);
     fill(255);
+    stroke(#72db62);
+    strokeWeight(10);
     ellipse(0, 0, size, size);
     rotate(angle);
     fill(0);
