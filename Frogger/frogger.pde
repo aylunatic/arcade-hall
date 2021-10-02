@@ -3,18 +3,56 @@ int winkTimer1;
 int winkTimer2;
 Frog frog;
 Fly fly;
+  int flyVX = 0;
+  int flyVY = 0;
+  int flySpeed = 5;
 
 void setup() {
   size(1000, 1000);
   background(0xAFE5FF);
   winkTimer1 = int(random(10000/frameRate, 17500/frameRate));
   frog = new Frog(width/2, height/2);
+  fly = new Fly();
 }
 
 void draw() {
     background(0xAFE5FF);
     frog.drawFrog();
     frog.updateTongue();
+    fly.drawFly();
+}
+
+void keyPressed() {
+  if(keyCode == LEFT) {
+    flyVX = flyVX - flySpeed;
+  }
+  if(keyCode == RIGHT) {
+    flyVX = flyVX + flySpeed;
+  }
+  if(keyCode == UP) {
+    flyVY = flyVY - flySpeed;
+  }
+  if(keyCode == DOWN) {
+    flyVY = flyVY + flySpeed;
+  }
+  if (keyCode == SHIFT && fly.outOfSight()) {
+    fly = new Fly();
+  }
+}
+
+void keyReleased() {
+  if(keyCode == LEFT && flyVX < 0) {
+    flyVX = 0;
+  }
+  if(keyCode == RIGHT && flyVX > 0) {
+    flyVX = 0;
+  }
+  if(keyCode == UP && flyVY  < 0) {
+    flyVY = 0;
+  }
+  if(keyCode == DOWN && flyVY > 0) {
+    flyVY = 0;
+  } 
 }
 
 class Frog {
@@ -76,11 +114,11 @@ class Frog {
   }
 
   void updateTongue() {
-  if (mousePressed) {
-    fill(#E32C56);
-    ellipse(mouseX, mouseY, 30, 30);
+    if (mousePressed) {
+      fill(#E32C56);
+      ellipse(mouseX, mouseY, 30, 30);
+    }
   }
-}
 }
 
 class Eye {
@@ -124,11 +162,26 @@ class Eye {
 class Fly {
   int posX;
   int posY;
-  int vX;
-  int vY;
 
   Fly() {
-    posX = int(random((width/10), random(width/10)*2));
+    posX = int(random((width/10), random(width/10)*9));
     posY = int(random((height/10), random(height/3)));
+  }
+
+  void drawFly() {
+    updateFly();
+    fill(0);
+    circle(posX, posY, 35);
+  }
+
+  void updateFly() {
+    posX = posX + flyVX;
+    posY = posY + flyVY;
+  }
+
+// Prüft, ob die Fliege den Bildschirmrand verlassen
+  boolean outOfSight() {
+    if(posX < 0 || posX > width ||  posY < 0 || posY > height) return true;
+    else return false;
   }
 }
