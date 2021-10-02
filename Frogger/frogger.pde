@@ -7,8 +7,8 @@
 
 /*-------------------------------------------  Globale Variablen  -----------------------------------------*/
 // Timer 
-int winkTimer1; // Zeit bis zum nächsten Blinzeln
-int winkTimer2; // Dauer des Blinzelns
+  int winkTimer1; // Zeit bis zum nächsten Blinzeln
+  int winkTimer2; // Dauer des Blinzelns
 
 // Globale Attribute die zum Frosch gehören
 Frog frog;
@@ -17,6 +17,7 @@ Fly fly;
   int flyVX = 0; // horizontale Beschleunigung
   int flyVY = 0; // vertikale Beschleunigung
   int flySpeed = 5; // Zuwachs der Beschleunigung
+
 
 /*---------------------------------------------  Programmablauf  ---------------------------------------------*/
 // Methode, welche von Processing automatisch und einmalig direkt nach dem Start des Spiels ausgeführt wird
@@ -107,6 +108,8 @@ class Frog {
     stroke(0,0,0,0); // keine Umrandungen
     ellipse(posX, posY - headHeight/2, headWidth, headHeight); // Kopf
     ellipse(posX, posY + bodyHeight/3, bodyWidth, bodyHeight); // Körper
+    fill(#337734);
+    ellipse(posX, posY - headHeight/4, eyeSize/2, eyeSize/3); //Mund
     fill(203, 226, 152, 96); // helleres Grün
     ellipse(posX, posY + bodyHeight/3, bodyWidth - bodyWidth/3, bodyHeight - bodyHeight/3); // Bauch
     updateEyes();// Positionen der Augen aktualisieren und anzeigen
