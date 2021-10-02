@@ -1,7 +1,9 @@
 
 int winkTimer1;
 int winkTimer2;
+
 Frog frog;
+
 Fly fly;
   int flyVX = 0;
   int flyVY = 0;
