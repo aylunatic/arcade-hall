@@ -119,8 +119,8 @@ class Frog {
   // Bewegt die Augen und lässt sie in zufälligen Abständen blinzeln. Wird aufgerugen in Frog#drawFrog
   void updateEyes() {
     if(winkTimer1 > 0) { // Wenn die Bedingung erfüllt ist, sind noch Frames übrig in denen das Auge offen sein soll
-      leftEye.update(mouseX, mouseY); // Winkel der linken Pupille zur Maus berechnen
-      rightEye.update(mouseX, mouseY); // Winkel der rechten Pupille zur Maus berechnen
+      leftEye.update(fly.posX, fly.posY); // Winkel der linken Pupille zur Maus berechnen
+      rightEye.update(fly.posX, fly.posY); // Winkel der rechten Pupille zur Maus berechnen
       leftEye.display(); // linkes Auge neu zeichnen
       rightEye.display(); // rechtes Auge neu zeichnen
       winkTimer1--; // dekrementieren, denn blinzeln ist wichtig damit die Augen befeuchtet werden
