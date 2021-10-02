@@ -3,7 +3,6 @@ int winkTimer1;
 int winkTimer2;
 
 Frog frog;
-
 Fly fly;
   int flyVX = 0;
   int flyVY = 0;
@@ -166,8 +165,8 @@ class Fly {
   int posY;
 
   Fly() {
-    posX = int(random((width/10), random(width/10)*9));
-    posY = int(random((height/10), random(height/3)));
+    posX = int(random((width/10), (width/10)*9));
+    posY = int(random((height/10), (height/3)));
   }
 
   void drawFly() {
