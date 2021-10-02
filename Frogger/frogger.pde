@@ -6,9 +6,15 @@
   ===========================================================================================================*/
 
 /*-------------------------------------------  Globale Variablen  -----------------------------------------*/
+
+int GAME_STATE;
+int MAX_HITS = 5;
 // Timer 
   int winkTimer1; // Zeit bis zum nächsten Blinzeln
   int winkTimer2; // Dauer des Blinzelns
+// Punkte
+  int points = 0;
+  int hitCtr = 0;
 // Bilder und andere Assets
  // PImage lilly;
   //PImage leaf;
@@ -39,6 +45,9 @@ void setup() {
 // Methode, welche von Processing automatisch bei jedem Frame neu ausgeführt wird. Hier übersichtlich, da die Methoden der anderen Klassen die eigentliche Logik enthalten
 void draw() {
     background(0xAFE5FF); // Background immer neu setzen, sonst sie man vorherige Positionen von Maus/Fliege
+    hitted();// Überprüft ob die FLiege gefuttert wurde und leitet die notwendigen Schritte ein
+    textSize(45); // Textgröße
+    text("Points: "+points, 10, 45); // Punktestand anzeigen
     //image(leaf, frog.posX, frog.posY+frog.bodyHeight);
     frog.draw(); // Grafik des Frosches (Augen) neu zeichnen
     //image(lilly, frog.posX, frog.posY+frog.bodyHeight);
@@ -83,6 +92,22 @@ void keyReleased() {
   if(keyCode == DOWN && flyVY > 0) {
     flyVY = 0;
   } 
+}
+
+/* ----------------------------------------  Spiellogik  --------------------------------------------------*/
+boolean isHit() {
+  return (mousePressed &&
+          mouseX >= fly.posX - fly.size/2 && mouseX <= fly.posX + fly.size/2 &&
+          mouseY >= fly.posY - fly.size/2 && mouseY <= fly.posY + fly.size/2);
+}
+
+void hitted() {
+  if (isHit()) {
+    points -= 5;
+    fly = new Fly();
+  } else if(hitCtr > MAX_HITS) {
+    GAME_STATE = 1;
+  }
 }
 
 /*-----------------------------------------------  Klassen  -----------------------------------------------*/
@@ -225,7 +250,7 @@ class Fly {
   int size = 35; // Größe der Fliege
   Eye leftEye, rightEye; // Die beiden Augen-Objekte
 
-//Konstruktor
+  //Konstruktor
   Fly() {
     // weist der neu erstellten Fliege eine zufällige Startposition im mittleren, oberen Drittel des Bildschirmes zu
     posX = int(random((width/10), (width/10)*9));
@@ -234,9 +259,13 @@ class Fly {
     rightEye = new Eye(posX + size/4, posY - size/3, size/2); // rechtes Auge
   }
 
-// Zeichnet die Fliege auf das Canvas
+  // Zeichnet die Fliege auf das Canvas
   void draw() {
     update();
+    strokeWeight(0);
+    fill(255);
+    ellipse(posX+size/2,posY,size,size/2);
+    ellipse(posX-size/2,posY,size,size/2);
     fill(0);
     stroke(0,0,0);
     strokeWeight(5);
@@ -247,9 +276,12 @@ class Fly {
     stroke(0,0,0);
     strokeWeight(3);
     rightEye.display(); // rechtes Auge neu zeichnen
+    stroke(255);
+    strokeWeight(5);
+    line(posX,posY+size/3,posX,posY+size);
   }
 
-// Versetzt die Position der Fliege entsprechend der Geschwindigkeit
+  // Versetzt die Position der Fliege entsprechend der Geschwindigkeit
   void update() {
     posX += flyVX;
     posY += flyVY;
@@ -259,7 +291,7 @@ class Fly {
     rightEye.updateAngle(mouseX, mouseY); // Winkel der rechten Pupille zur Maus berechnen
   }
 
-// Prüft, ob die Fliege den Bildschirmrand verlassen
+  // Prüft, ob die Fliege den Bildschirmrand verlassen
   boolean outOfSight() {
     if(posX < 0 || posX > width ||  posY < 0 || posY > height) return true;
     else return false;
