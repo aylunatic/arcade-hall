@@ -10,8 +10,8 @@
   int winkTimer1; // Zeit bis zum nächsten Blinzeln
   int winkTimer2; // Dauer des Blinzelns
 // Bilder und andere Assets
-  PImage lilly;
-  PImage leaf;
+ // PImage lilly;
+  //PImage leaf;
 
 // Globale Attribute die zum Frosch gehören
 Frog frog;
@@ -28,8 +28,8 @@ void setup() {
   size(1000, 1000); // Leinwandgröße
   background(0xAFE5FF); // Hintergrundfarbe
   imageMode(CENTER);
-  leaf=loadImage("Froggy_seerose_blatt.png");
-  lilly=loadImage("Froggy_seerose_bluete.png");
+  //leaf = loadImage("Froggy_seerose_blatt.png");
+  //lilly = loadImage("Froggy_seerose_bluete.png");
   winkTimer1 = int(random(10000/frameRate, 17500/frameRate)); // Zeit bis zum ersten Blinzeln
   // Hier werden die Variablen zu tatsächlichen Objekten instantiiert
   frog = new Frog(width/2, height/2); 
@@ -39,26 +39,26 @@ void setup() {
 // Methode, welche von Processing automatisch bei jedem Frame neu ausgeführt wird. Hier übersichtlich, da die Methoden der anderen Klassen die eigentliche Logik enthalten
 void draw() {
     background(0xAFE5FF); // Background immer neu setzen, sonst sie man vorherige Positionen von Maus/Fliege
-    image(leaf, frog.posX, frog.posY+frog.bodyHeight);
-    frog.drawFrog(); // Grafik des Frosches (Augen) neu zeichnen
-    image(lilly, frog.posX, frog.posY+frog.bodyHeight);
+    //image(leaf, frog.posX, frog.posY+frog.bodyHeight);
+    frog.draw(); // Grafik des Frosches (Augen) neu zeichnen
+    //image(lilly, frog.posX, frog.posY+frog.bodyHeight);
     frog.updateTongue(); // Prüfen, ob die Zunge herausgestreckt wurde
-    fly.drawFly(); // Fliege bewegen und neuzeichnen
+    fly.draw(); // Fliege bewegen und neuzeichnen
 }
 
 // Methode, welche von Processing automatisch aufgerufen wird, wenn eine Taste gedrückt wird
 void keyPressed() {
   if(keyCode == LEFT) {
-    flyVX = flyVX - flySpeed;
+    flyVX -= flySpeed;
   }
   if(keyCode == RIGHT) {
-    flyVX = flyVX + flySpeed;
+    flyVX += flySpeed;
   }
   if(keyCode == UP) {
-    flyVY = flyVY - flySpeed;
+    flyVY -= flySpeed;
   }
   if(keyCode == DOWN) {
-    flyVY = flyVY + flySpeed;
+    flyVY += flySpeed;
   }
   /* Da die Beschleunigung der Fliege immer größer wird und sie sich somit schneller bewegt, kann es leicht pasieren
      dass sie aus dem sichtbaren Bereich herausfliegt, und der Spieler den Weg zurück ins Bild nicht mehr findet.
@@ -111,7 +111,7 @@ class Frog {
   }
   
   // Zeichnet den Frosch (mitsamt der Kulleraugen) auf das Canvas. Wird aufgerufen in draw().
-  void drawFrog() {
+  void draw() {
     fill(#72db62); // Grün für den Körper
     stroke(0,0,0,0); // keine Umrandungen
     ellipse(posX, posY - headHeight/2, headWidth, headHeight); // Kopf
@@ -124,12 +124,16 @@ class Frog {
     strokeWeight(4); // Strichdicke wieder auf Standard, da dieser in den Augen verändert wird
   }
   
-  // Bewegt die Augen und lässt sie in zufälligen Abständen blinzeln. Wird aufgerugen in Frog#drawFrog
+  // Bewegt die Augen und lässt sie in zufälligen Abständen blinzeln. Wird aufgerugen in Frog#draw
   void updateEyes() {
     if(winkTimer1 > 0) { // Wenn die Bedingung erfüllt ist, sind noch Frames übrig in denen das Auge offen sein soll
-      leftEye.update(fly.posX, fly.posY); // Winkel der linken Pupille zur Maus berechnen
-      rightEye.update(fly.posX, fly.posY); // Winkel der rechten Pupille zur Maus berechnen
+      leftEye.updateAngle(fly.posX, fly.posY); // Winkel der linken Pupille zur Maus berechnen
+      rightEye.updateAngle(fly.posX, fly.posY); // Winkel der rechten Pupille zur Maus berechnen
+      stroke(#72db62);
+      strokeWeight(10);
       leftEye.display(); // linkes Auge neu zeichnen
+      stroke(#72db62);
+      strokeWeight(10);
       rightEye.display(); // rechtes Auge neu zeichnen
       winkTimer1--; // dekrementieren, denn blinzeln ist wichtig damit die Augen befeuchtet werden
     }
@@ -147,9 +151,13 @@ class Frog {
            (posX+headWidth/4)+eyeSize/2-8, posY - headHeight +eyeSize/20);
       winkTimer2--; // Dekrementieren damit die Augen nicht ewig zu sind
     } else { // Wenn beide auf 0 sind, Auge wieder geöffnet anzeigen und neue Zeitintervalle für das nächste Blinzeln bestimmen
-      leftEye.update(mouseX, mouseY); // Winkel der linken Pupille zur Maus berechnen
-      rightEye.update(mouseX, mouseY); // Winkel der rechten Pupille zur Maus berechnen
+      leftEye.updateAngle(mouseX, mouseY); // Winkel der linken Pupille zur Maus berechnen
+      rightEye.updateAngle(mouseX, mouseY); // Winkel der rechten Pupille zur Maus berechnen
+      stroke(#72db62);
+      strokeWeight(10);
       leftEye.display(); // linkes Auge neu zeichnen
+      stroke(#72db62);
+      strokeWeight(10);
       rightEye.display(); // rechtes Auge neu zeichnen
       winkTimer1 = int(random(17500/frameRate, 25000/frameRate)); // neue zufällige Zeitspanne bis zum nächsten Blinzeln
       winkTimer2 = int(random(1000/frameRate, 1250/frameRate)); // neue Zufällige Dauer des nächsten Blinzelns
@@ -181,7 +189,12 @@ class Eye {
     size = ts;
  }
 
-  void update(int mx, int my) {
+ void updatePosition(int x, int y) {
+   this.x = x;
+   this.y = y;
+ }
+
+  void updateAngle(int mx, int my) {
     angle = atan2(my-y, mx-x);
   }
   
@@ -189,8 +202,6 @@ class Eye {
     pushMatrix();
     translate(x, y);
     fill(255);
-    stroke(#72db62);
-    strokeWeight(10);
     ellipse(0, 0, size, size);
     rotate(angle);
     fill(0);
@@ -198,7 +209,7 @@ class Eye {
     strokeWeight(0);
     int distanceX = mouseX - x;
     int distanceY = mouseY - y;
-    float distance = sqrt((pow(distanceX,2) + pow(distanceY,2)));
+    float distance = sqrt((sq(distanceX) + sq(distanceY)));
     if (distance < (size/4)) {
       ellipse(distance, 0, size/2, size/2);
     } else {
@@ -211,27 +222,41 @@ class Eye {
 class Fly {
   int posX; // x-Koordinate der Fliege
   int posY; // y-Koordinate der Fliege
+  int size = 35; // Größe der Fliege
+  Eye leftEye, rightEye; // Die beiden Augen-Objekte
 
 //Konstruktor
   Fly() {
     // weist der neu erstellten Fliege eine zufällige Startposition im mittleren, oberen Drittel des Bildschirmes zu
     posX = int(random((width/10), (width/10)*9));
     posY = int(random((height/10), (height/3)));
+    leftEye = new Eye(posX - size/4, posY - size/3, size/2); // linkes Auge
+    rightEye = new Eye(posX + size/4, posY - size/3, size/2); // rechtes Auge
   }
 
 // Zeichnet die Fliege auf das Canvas
-  void drawFly() {
-    updateFly();
+  void draw() {
+    update();
     fill(0);
-    stroke(0,0,0,0);
-    strokeWeight(0);
-    circle(posX, posY, 35);
+    stroke(0,0,0);
+    strokeWeight(5);
+    circle(posX, posY, size);
+    stroke(0,0,0);
+    strokeWeight(3);
+    leftEye.display(); // linkes Auge neu zeichnen
+    stroke(0,0,0);
+    strokeWeight(3);
+    rightEye.display(); // rechtes Auge neu zeichnen
   }
 
 // Versetzt die Position der Fliege entsprechend der Geschwindigkeit
-  void updateFly() {
-    posX = posX + flyVX;
-    posY = posY + flyVY;
+  void update() {
+    posX += flyVX;
+    posY += flyVY;
+    leftEye.updatePosition(posX - size/4, posY - size/3);
+    rightEye.updatePosition(posX + size/4, posY - size/3);
+    leftEye.updateAngle(mouseX, mouseY); // Winkel der linken Pupille zur Maus berechnen
+    rightEye.updateAngle(mouseX, mouseY); // Winkel der rechten Pupille zur Maus berechnen
   }
 
 // Prüft, ob die Fliege den Bildschirmrand verlassen
