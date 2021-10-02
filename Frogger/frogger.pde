@@ -9,6 +9,9 @@
 // Timer 
   int winkTimer1; // Zeit bis zum nächsten Blinzeln
   int winkTimer2; // Dauer des Blinzelns
+// Bilder und andere Assets
+  PImage lilly;
+  PImage leaf;
 
 // Globale Attribute die zum Frosch gehören
 Frog frog;
@@ -24,6 +27,9 @@ Fly fly;
 void setup() {
   size(1000, 1000); // Leinwandgröße
   background(0xAFE5FF); // Hintergrundfarbe
+  imageMode(CENTER);
+  leaf=loadImage("Froggy_seerose_blatt.png");
+  lilly=loadImage("Froggy_seerose_bluete.png");
   winkTimer1 = int(random(10000/frameRate, 17500/frameRate)); // Zeit bis zum ersten Blinzeln
   // Hier werden die Variablen zu tatsächlichen Objekten instantiiert
   frog = new Frog(width/2, height/2); 
@@ -33,7 +39,9 @@ void setup() {
 // Methode, welche von Processing automatisch bei jedem Frame neu ausgeführt wird. Hier übersichtlich, da die Methoden der anderen Klassen die eigentliche Logik enthalten
 void draw() {
     background(0xAFE5FF); // Background immer neu setzen, sonst sie man vorherige Positionen von Maus/Fliege
+    image(leaf, frog.posX, frog.posY+frog.bodyHeight);
     frog.drawFrog(); // Grafik des Frosches (Augen) neu zeichnen
+    image(lilly, frog.posX, frog.posY+frog.bodyHeight);
     frog.updateTongue(); // Prüfen, ob die Zunge herausgestreckt wurde
     fly.drawFly(); // Fliege bewegen und neuzeichnen
 }
@@ -152,7 +160,11 @@ class Frog {
   void updateTongue() {
     if (mousePressed) {
       fill(#E32C56);
-      ellipse(mouseX, mouseY, 30, 30);
+      stroke(0,0,0,0);
+      ellipse(mouseX, mouseY, 25, 30);
+      stroke(#E32C56);
+      strokeWeight(20);
+      line(posX, posY - headHeight/4 + eyeSize/3 - 25 , mouseX, mouseY);
     }
   }
 }
@@ -211,6 +223,8 @@ class Fly {
   void drawFly() {
     updateFly();
     fill(0);
+    stroke(0,0,0,0);
+    strokeWeight(0);
     circle(posX, posY, 35);
   }
 
