@@ -6,22 +6,26 @@
   ===========================================================================================================*/
 
 /*-------------------------------------------  Globale Variablen  -----------------------------------------*/
-
-int GAME_STATE = 0; // In welchem Zustand (Startscreen, Spiel, Endscreen) befindet das Spiel sich gerade?
-int MAX_HITS = 10; // Wie viel Hunger hat der Frosch? (Anzahl der Fligen die zum gewinnen des Frosches gefuttert werden müssen)
-boolean transition = false; // Gibt an ob der Bildschirm sich grade zum nächsten Bildschirm bewegt
-// Timer 
-  int winkTimer1; // Zeit bis zum nächsten Blinzeln
-  int winkTimer2; // Dauer des Blinzelns
-// Punkte und Siegerliste
-  int points = 0;
-  int hitCtr = 0;
-  int[] highscoreFly = new int[10];
-  float[] highscoreFrog = new float[10];
-// Bilder und andere Assets
+/* Globale Daten */
+  int GAME_STATE = -1; // In welchem Zustand (Startscreen, Spiel, Endscreen) befindet das Spiel sich gerade?
+  int MAX_HITS = 10; // Wie viel Hunger hat der Frosch? (Anzahl der Fligen die zum gewinnen des Frosches gefuttert werden müssen)
+  // Übergänge  
+    int transY = -height;
+    boolean transition = false; // Gibt an ob der Bildschirm sich grade zum nächsten Bildschirm bewegt
+  // Timer 
+    int winkTimer1; // Zeit bis zum nächsten Blinzeln
+    int winkTimer2; // Dauer des Blinzelns
+  // Punkte und Siegerliste
+    int points = 0;
+    int hitCtr = 0;
+    int[] highscoreFly = new int[10];
+    float[] highscoreFrog = new float[10];
+/* Bilder und andere Assets */
+  // Bilder für den Titelbilschirm
   PImage title_font;
   PImage title_frog;
   PImage title_fly;
+  // Bilder im Spiel
   PImage lilly;
   PImage leaf;
 
@@ -52,11 +56,20 @@ void setup() {
 void draw() {
   if(GAME_STATE < 0 && !transition) {
       drawStartscreen();
+  } else if(GAME_STATE == 0 && transition) {
+      if(transY == 0) {
+        drawStartscreen();
+        transition = false;
+      } else {
+        drawStartscreen();
+        translate(0, transY);
+        transY += 1; 
+      }
   } else if(GAME_STATE == 0 && !transition) {
       background(0xAFE5FF); // Background immer neu setzen, sonst sie man vorherige Positionen von Maus/Fliege
       hitted();// Überprüft ob die FLiege gefuttert wurde und leitet die notwendigen Schritte ein
       textSize(45); // Textgröße
-      text("Points: "+points, 10, 45); // Punktestand anzeigen
+      text("Points: "+ points, 10, 45); // Punktestand anzeigen
       image(leaf, frog.posX, frog.posY+frog.bodyHeight);
       frog.draw(); // Grafik des Frosches (Augen) neu zeichnen
       image(lilly, frog.posX, frog.posY+frog.bodyHeight);
@@ -89,7 +102,7 @@ void keyPressed() {
     fly = new Fly(); // Dies geht durch Zuweisen auf ein neues Objekt, da die Position im Konstruktor Fly() zurfällig gesetzt wird
   }
 }
-// Methode, welche von Processing automatischaufgerufen wird, wenn eine Taste losgelassen wird
+// Methode, welche von Processing automatisch aufgerufen wird, wenn eine Taste losgelassen wird
 void keyReleased() {
   // Diese Abfragen dienen einer flüssigere Steuerung
   if(keyCode == LEFT && flyVX < 0) {
@@ -105,10 +118,18 @@ void keyReleased() {
     flyVY = 0;
   } 
 }
+// Methode, welche von Processing automatisch aufgerufen wird, wenn die Maustaste gedrückt und losgelassen wird
+void mouseClicked() {
+  if(GAME_STATE < 0 && !transition) {
+    transition = true;
+    GAME_STATE = 0;
+  }
+}
 
 /* ----------------------------------------  Spiellogik  --------------------------------------------------*/
 void drawStartscreen() {
-
+  background(0xAFE5FF);
+  text("Flyhunt", width/2, height/2 - height);
 }
 
 void drawEndscreen() {
@@ -117,13 +138,14 @@ void drawEndscreen() {
 
 void findHighscore() {
   //Einfügen des Wertes in die Highscore-Liste
-  for(int i = 0; i < highscoreFly; i++) {
+  for(int i = 0; i < highscoreFly.length; i++) {
     // Wenn der derzeitge Rekord erreicht wird, diesen mit dem erreichten Ergebnis ersetzen falls besser
     if(i == highscoreFly.length -1) {
-      if(highscoreFly[i] <= score) highscoreFly[i] = score;
+      if(highscoreFly[i] <= points) highscoreFly[i] = points;
     } 
     // Wenn der Wert größer als der an Index i ist aber kleiner als der nächste an dieser Stelle einfügen
-    else if(highscoreFly[i] <= score && highScoreFly[i+1] > score) highscoreFly[i] = score;
+    else if(highscoreFly[i] <= points && highscoreFly[i+1] > points) highscoreFly[i] = points;
+  }
 }
 
 boolean isHit() {
@@ -317,8 +339,13 @@ class Fly {
 
   // Versetzt die Position der Fliege entsprechend der Geschwindigkeit
   void update() {
-    posX += flyVX;
-    posY += flyVY;
+    if(GAME_STATE == 0) {
+      posX += flyVX;
+      posY += flyVY;
+    } else if(GAME_STATE > 0) {
+      // Bewegt die Fliege aus dem Bild so dass sie nicht mehr zusehen ist wenn
+      posX += -200;
+    }
     leftEye.updatePosition(posX - size/4, posY - size/3);
     rightEye.updatePosition(posX + size/4, posY - size/3);
     leftEye.updateAngle(mouseX, mouseY); // Winkel der linken Pupille zur Maus berechnen
