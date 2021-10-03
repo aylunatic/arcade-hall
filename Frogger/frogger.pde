@@ -7,17 +7,23 @@
 
 /*-------------------------------------------  Globale Variablen  -----------------------------------------*/
 
-int GAME_STATE;
-int MAX_HITS = 5;
+int GAME_STATE = 0; // In welchem Zustand (Startscreen, Spiel, Endscreen) befindet das Spiel sich gerade?
+int MAX_HITS = 10; // Wie viel Hunger hat der Frosch? (Anzahl der Fligen die zum gewinnen des Frosches gefuttert werden müssen)
+boolean transition = false; // Gibt an ob der Bildschirm sich grade zum nächsten Bildschirm bewegt
 // Timer 
   int winkTimer1; // Zeit bis zum nächsten Blinzeln
   int winkTimer2; // Dauer des Blinzelns
-// Punkte
+// Punkte und Siegerliste
   int points = 0;
   int hitCtr = 0;
+  int[] highscoreFly = new int[10];
+  float[] highscoreFrog = new float[10];
 // Bilder und andere Assets
- // PImage lilly;
-  //PImage leaf;
+  PImage title_font;
+  PImage title_frog;
+  PImage title_fly;
+  PImage lilly;
+  PImage leaf;
 
 // Globale Attribute die zum Frosch gehören
 Frog frog;
@@ -34,8 +40,8 @@ void setup() {
   size(1000, 1000); // Leinwandgröße
   background(0xAFE5FF); // Hintergrundfarbe
   imageMode(CENTER);
-  //leaf = loadImage("Froggy_seerose_blatt.png");
-  //lilly = loadImage("Froggy_seerose_bluete.png");
+  leaf = loadImage("Froggy_seerose_blatt.png");
+  lilly = loadImage("Froggy_seerose_bluete.png");
   winkTimer1 = int(random(10000/frameRate, 17500/frameRate)); // Zeit bis zum ersten Blinzeln
   // Hier werden die Variablen zu tatsächlichen Objekten instantiiert
   frog = new Frog(width/2, height/2); 
@@ -44,15 +50,21 @@ void setup() {
 
 // Methode, welche von Processing automatisch bei jedem Frame neu ausgeführt wird. Hier übersichtlich, da die Methoden der anderen Klassen die eigentliche Logik enthalten
 void draw() {
-    background(0xAFE5FF); // Background immer neu setzen, sonst sie man vorherige Positionen von Maus/Fliege
-    hitted();// Überprüft ob die FLiege gefuttert wurde und leitet die notwendigen Schritte ein
-    textSize(45); // Textgröße
-    text("Points: "+points, 10, 45); // Punktestand anzeigen
-    //image(leaf, frog.posX, frog.posY+frog.bodyHeight);
-    frog.draw(); // Grafik des Frosches (Augen) neu zeichnen
-    //image(lilly, frog.posX, frog.posY+frog.bodyHeight);
-    frog.updateTongue(); // Prüfen, ob die Zunge herausgestreckt wurde
-    fly.draw(); // Fliege bewegen und neuzeichnen
+  if(GAME_STATE < 0 && !transition) {
+      drawStartscreen();
+  } else if(GAME_STATE == 0 && !transition) {
+      background(0xAFE5FF); // Background immer neu setzen, sonst sie man vorherige Positionen von Maus/Fliege
+      hitted();// Überprüft ob die FLiege gefuttert wurde und leitet die notwendigen Schritte ein
+      textSize(45); // Textgröße
+      text("Points: "+points, 10, 45); // Punktestand anzeigen
+      image(leaf, frog.posX, frog.posY+frog.bodyHeight);
+      frog.draw(); // Grafik des Frosches (Augen) neu zeichnen
+      image(lilly, frog.posX, frog.posY+frog.bodyHeight);
+      frog.updateTongue(); // Prüfen, ob die Zunge herausgestreckt wurde
+      fly.draw(); // Fliege bewegen und neuzeichnen
+  } else if(GAME_STATE > 0 && !transition) {
+      drawEndscreen();
+  }
 }
 
 // Methode, welche von Processing automatisch aufgerufen wird, wenn eine Taste gedrückt wird
@@ -95,6 +107,25 @@ void keyReleased() {
 }
 
 /* ----------------------------------------  Spiellogik  --------------------------------------------------*/
+void drawStartscreen() {
+
+}
+
+void drawEndscreen() {
+
+}
+
+void findHighscore() {
+  //Einfügen des Wertes in die Highscore-Liste
+  for(int i = 0; i < highscoreFly; i++) {
+    // Wenn der derzeitge Rekord erreicht wird, diesen mit dem erreichten Ergebnis ersetzen falls besser
+    if(i == highscoreFly.length -1) {
+      if(highscoreFly[i] <= score) highscoreFly[i] = score;
+    } 
+    // Wenn der Wert größer als der an Index i ist aber kleiner als der nächste an dieser Stelle einfügen
+    else if(highscoreFly[i] <= score && highScoreFly[i+1] > score) highscoreFly[i] = score;
+}
+
 boolean isHit() {
   return (mousePressed &&
           mouseX >= fly.posX - fly.size/2 && mouseX <= fly.posX + fly.size/2 &&
@@ -103,11 +134,14 @@ boolean isHit() {
 
 void hitted() {
   if (isHit()) {
-    points -= 5;
+    points -= 10000/frameRate;
     fly = new Fly();
-  } else if(hitCtr > MAX_HITS) {
+  } else if(hitCtr >= MAX_HITS) {
+    findHighscore();
     GAME_STATE = 1;
+    transition = true;
   }
+  else points += 100/frameRate; 
 }
 
 /*-----------------------------------------------  Klassen  -----------------------------------------------*/
